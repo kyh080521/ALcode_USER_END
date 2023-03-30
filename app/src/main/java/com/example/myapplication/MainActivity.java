@@ -144,18 +144,19 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
 
                         }
                         if(warn.length() > 0) {
-                            AlertDialog.Builder menu = new AlertDialog.Builder(MainActivity.this);
-                            menu.setIcon(R.mipmap.ic_launcher);
-                            menu.setTitle("알러지 검출");
-                            menu.setMessage(food + "에서 " + warn + "알러지가 당신의 알러지와 일치합니다.");
+                            AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                            ad.setIcon(R.mipmap.ic_launcher);
+                            ad.setTitle("Allergy Detection!");
+                            ad.setMessage(food + "에서 " + warn + "알러지가 당신의 알러지와 일치합니다.");
 
-                            menu.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            ad.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                 }
                             });
 
+                            ad.show();
                         }
                     }
                     Toast.makeText(MainActivity.this, "Scanned: " + alResult, Toast.LENGTH_LONG).show();
@@ -426,8 +427,8 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
         egg_u.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(egg_u.isChecked()){
-                    eggAlU = true;
+                if(egg_u.isChecked()) {
+                   eggAlU = true;
                 }
                 else {
                     eggAlU=false;
