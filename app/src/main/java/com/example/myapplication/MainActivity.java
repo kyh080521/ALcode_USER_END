@@ -121,8 +121,8 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
                             } */
                             if(milkAlU && alInform.equals("milk")) {
                                 warn += "milk ";
-                            }if(eggAlU && alInform.equals("egg")) {
-                                warn += "egg ";
+                            }if(eggAlU && alInform.equals("eggs")) {
+                                warn += "eggs ";
                             }if(fishAlU && alInform.equals("fish")) {
                                 warn += "fish ";
                             }if(crustaceanShellfishAlU) {
@@ -147,9 +147,9 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
                             AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
                             ad.setIcon(R.mipmap.ic_launcher);
                             ad.setTitle("Allergy Detection!");
-                            ad.setMessage(food + "에서 " + warn + "알러지가 당신의 알러지와 일치합니다.");
+                            ad.setMessage(warn + "in" + food + "were detected");
 
-                            ad.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            ad.setPositiveButton("confirm", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();

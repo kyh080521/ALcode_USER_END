@@ -13,28 +13,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@drawable/gradient_background">
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:background="#ffff"
-            android:textColor="#151414"
-            android:text="Home"
-            android:textAlignment="center"
-            android:gravity="center"
-            android:textSize="15sp"/>
+
         <Button
             android:id="@+id/btnCreate"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="50dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/buttonroud"
             android:onClick="onButtonClick"
-            android:text="QR 스캔"
-            android:textSize="10sp"
+            android:text="QR Scan"
+            android:textSize="20sp"
             android:textColor="#ffff"
             app:elevation="2dp"
             app:iconPadding="99dp"
@@ -214,65 +205,65 @@
                 <CheckBox
                     android:id="@+id/checkBox_milk_u"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="50dp"
                     android:text="milk"
-                    android:textSize="20sp"
+                    android:textSize="30sp"
                     android:textColor="#151414"
                     android:layout_marginBottom="5dp"/>
                 <CheckBox
                     android:id="@+id/checkBox_egg_u"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="50dp"
                     android:text="egg"
-                    android:textSize="20sp"
+                    android:textSize="30sp"
                     android:textColor="#151414"
                     android:layout_marginBottom="5dp"/>
                 <CheckBox
                     android:id="@+id/checkBox_fish_u"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="50dp"
                     android:text="fish"
-                    android:textSize="20sp"
+                    android:textSize="30sp"
                     android:textColor="#151414"
                     android:layout_marginBottom="5dp"/>
                 <CheckBox
                     android:id="@+id/checkBox_crustaceanShellfishAlU_u"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="50dp"
                     android:text="crustacean and shellfish"
-                    android:textSize="20sp"
+                    android:textSize="30sp"
                     android:textColor="#151414"
                     android:layout_marginBottom="5dp"/>
                 <CheckBox
                     android:id="@+id/checkBox_treeNuts_u"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="50dp"
                     android:text="tree nuts"
-                    android:textSize="20sp"
+                    android:textSize="30sp"
                     android:textColor="#151414"
                     android:layout_marginBottom="5dp"/>
                 <CheckBox
                     android:id="@+id/checkBox_wheat_u"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="50dp"
                     android:text="wheat"
-                    android:textSize="20sp"
+                    android:textSize="30sp"
                     android:textColor="#151414"
                     android:layout_marginBottom="5dp"/>
                 <CheckBox
                     android:id="@+id/checkBox_peanuts_u"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="50dp"
                     android:text="peanuts"
-                    android:textSize="20sp"
+                    android:textSize="30sp"
                     android:textColor="#151414"
                     android:layout_marginBottom="5dp"/>
                 <CheckBox
                     android:id="@+id/checkBox_soybeans_u"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="50dp"
                     android:text="soybeans"
-                    android:textSize="20sp"
+                    android:textSize="30sp"
                     android:textColor="#151414"
                     android:layout_marginBottom="5dp"/>
 
@@ -285,7 +276,7 @@
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="알러지 정보를 입력해주세요"
+            android:text="Please check your allergy"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/consider_button"
