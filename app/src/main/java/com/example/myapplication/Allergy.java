@@ -25,14 +25,8 @@ public class Allergy {
         alTake = buttonCheck;
     }
 
-    String warnMessage(int languageNum) {
-        if(languageNum == 1) {
-            return alNameU + " ";
-        } else if(languageNum == 82) {
-            return alNameK + " ";
-        } else {
-            return "";
-        }
+    String warnMessage() {
+        return alNameU + ", ";
     }
 
     boolean allergyCompare(String foodAlInform) {
@@ -42,5 +36,10 @@ public class Allergy {
         } else {
             return false;
         }
+    }
+
+    String backgroundColorSet() {
+        if(alTake == true) return "#F15656";
+        else return "#ffffff";
     }
 }

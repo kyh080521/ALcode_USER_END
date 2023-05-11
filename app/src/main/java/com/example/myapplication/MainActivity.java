@@ -1,11 +1,24 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AlertDialog;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,16 +40,30 @@ import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanIntentResult;
 import com.journeyapps.barcodescanner.ScanOptions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity<MyActivity> extends AppCompatActivity {
-    private CheckBox egg_k, beef_k, pork_k, chicken_k, shrimp_k, crab_k, squid_k, mackerel_k, shellfish_k, milk_k, peach_k, peanut_k, walnut_k, pine_nut_k, tomato_k, soybean_k, wheat_k, buck_wheat_k, sulfurous_acid_k;
-    private CheckBox milk_u, egg_u, fish_u, shrimp_u, shellfish_u, treeNuts_u, wheat_u, peanuts_u, soybeans_u;
+    private LinearLayout KOR, USA;
+    private LinearLayout chicken_k, shrimp_k, crab_k, squid_k, mackerel_k, shellfish_k, milk_k, peach_k, peanut_k, walnut_k, pine_nut_k, tomato_k, soybean_k, wheat_k, buck_wheat_k, sulfurous_acid_k, egg_k, beef_k, pork_k;
+    private LinearLayout egg_u, milk_u, fish_u, shellfish_u, treeNuts_u, wheat_u, peanuts_u, soybeans_u;
     private Spinner spinner_language, spinner_nationality;
-    private TextView textView_consider;
+    /*private TextView textView_consider;
+    private TextView text_egg_k, text_beef_k, text_pork_k, text_chicken_k, text_shrimp_k,  text_crab_k, text_squid_k,  text_mackerel_k,  text_shellfish_k,  text_milk_k,  text_peach_k,  text_peanut_k, text_walnut_k, text_pine_nut_k, text_tomato_k, text_soybean_k, text_wheat_k, text_buck_wheat_k, text_sulfurous_acid_k;
+    private TextView text_milk_u, text_egg_u, text_fish_u, text_shellfish_u, text_treeNuts_u, text_wheat_u, text_peanuts_u, text_soybeans_u;
+    private ImageView image_egg_k, image_beef_k, image_pork_k, image_chicken_k, image_shrimp_k,  image_crab_k, image_squid_k,  image_mackerel_k,  image_shellfish_k,  image_milk_k,  image_peach_k,  image_peanut_k, image_walnut_k, image_pine_nut_k, image_tomato_k, image_soybean_k, image_wheat_k, image_buck_wheat_k, image_sulfurous_acid_k;
+    private ImageView image_milk_u, image_egg_u, image_fish_u, image_shellfish_u, image_treeNuts_u, image_wheat_u, image_peanuts_u, image_soybeans_u; */
+    private Dialog dialog_layout;
+    private Color Color;
+    private ListView listview;
+
+    /*String[] alFish=new String[]{"Anchovies", "Bass", "Catfish", " Cod", " Flounder", " Grouper", " Haddock", "Hake", "Halibut", "Herring", "Mahi mahi", "Perch", " Pike", "Pollock", " Salmon", "Scrod", " Sole", " Snapper", " Swordfish", "Tilapia", "Trout", "Tuna"};
+    String[] alShellfish = new String[]{"Barnacle", "Crab",  "Crawfish", " Krill", " Lobster", "Prawns", "Shrimp"};
+    String[] alNuts = new String[]{"Almond", "Artificial nuts", "Beechnut", "Black walnut", "Brazil nut", "Butternut", "Cashew", "Chestnut", "Chinquapin nut", "Coconut"}; */
 
     Allergy alMilkU = new Allergy("Milk", "우유",  1, false);
     Allergy alEggsU = new Allergy("Eggs", "난류",1, false);
     Allergy alFishU = new Allergy("Fish", "생선",1, false);
-    Allergy alShrimpU = new Allergy("Shrimp", "새우",1, false);
     Allergy alShellfishU = new Allergy("Shellfish", "조개",1, false);
     Allergy alNutsU = new Allergy("Nuts", "견과류",1, false);
     Allergy alWheatU = new Allergy("Wheat", "밀",1, false);
@@ -67,16 +94,15 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     int nationalNum;
-    int languageNum;
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
             result -> {
                 if (result.getContents() == null) {
                     Toast.makeText(MainActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
                 } else {
-                    int numFood = 0;
                     String[] product = result.getContents().split("/");
                     int pdNum = result.getContents().length() - result.getContents().replace("/", "").length();
+                    String fdResult = "";
 
                     for (int i = 0; i < pdNum; i++) {
                         String food = product[i].split("&")[0];
@@ -88,487 +114,445 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
                             String alInform = allergy[j].trim();
                             if(nationalNum == 1) {
                                 if (alMilkU.allergyCompare(alInform)) {
-                                    warn += alMilkU.warnMessage(languageNum);
+                                    warn += alMilkU.warnMessage();
                                 } if (alEggsU.allergyCompare(alInform)) {
-                                    warn += alEggsU.warnMessage(languageNum);
+                                    warn += alEggsU.warnMessage();
                                 } if (alFishU.allergyCompare(alInform)) {
-                                    warn += alFishU.warnMessage(languageNum);
-                                } if (alShrimpU.allergyCompare(alInform)) {
-                                    warn += alShrimpU.warnMessage(languageNum);
+                                    warn += alFishU.warnMessage();
                                 } if (alShellfishU.allergyCompare(alInform)) {
-                                    warn += alShrimpU.warnMessage(languageNum);
+                                    warn += alShellfishU.warnMessage();
                                 } if (alNutsU.allergyCompare(alInform)) {
-                                    warn += alNutsU.warnMessage(languageNum);
+                                    warn += alNutsU.warnMessage();
                                 } if (alWheatU.allergyCompare(alInform)) {
-                                    warn += alWheatU.warnMessage(languageNum);
+                                    warn += alWheatU.warnMessage();
                                 } if (alPeanutsU.allergyCompare(alInform)) {
-                                    warn += alPeanutsU.warnMessage(languageNum);
+                                    warn += alPeanutsU.warnMessage();
                                 } if (alSoybeansU.allergyCompare(alInform)) {
-                                    warn += alSoybeansU.warnMessage(languageNum);
+                                    warn += alSoybeansU.warnMessage();
+                                } if (alInform.equals("Hazelnut") && alNutsU.alTake) {
+                                    warn += "Hazelnut, ";
                                 }
                             } else if(nationalNum == 82) {
                                 if (alEggsK.allergyCompare(alInform)) {
-                                    warn += alEggsK.warnMessage(languageNum);
+                                    warn += alEggsK.warnMessage();
                                 }if (alBeefK.allergyCompare(alInform)) {
-                                    warn += alBeefK.warnMessage(languageNum);
+                                    warn += alBeefK.warnMessage();
                                 }if(alPorkK.allergyCompare(alInform)) {
-                                    warn += alPorkK.warnMessage(languageNum);
+                                    warn += alPorkK.warnMessage();
                                 }if(alChickenK.allergyCompare(alInform)) {
-                                    warn += alChickenK.warnMessage(languageNum);
+                                    warn += alChickenK.warnMessage();
                                 }if(alShrimpK.allergyCompare(alInform)) {
-                                    warn += alShrimpK.warnMessage(languageNum);
+                                    warn += alShrimpK.warnMessage();
                                 }if(alCrabK.allergyCompare(alInform)) {
-                                    warn += alCrabK.warnMessage(languageNum);
+                                    warn += alCrabK.warnMessage();
                                 }if(alSquidK.allergyCompare(alInform)) {
-                                    warn += alSquidK.warnMessage(languageNum);
+                                    warn += alSquidK.warnMessage();
                                 }if(alMackerelK.allergyCompare(alInform)) {
-                                    warn += alMackerelK.warnMessage(languageNum);
+                                    warn += alMackerelK.warnMessage();
                                 }if(alShellfishK.allergyCompare(alInform)) {
-                                    warn += alShellfishK.warnMessage(languageNum);
+                                    warn += alShellfishK.warnMessage();
                                 }if(alMilkK.allergyCompare(alInform)) {
-                                    warn += alMilkK.warnMessage(languageNum);
+                                    warn += alMilkK.warnMessage();
                                 }if(alPeachK.allergyCompare(alInform)) {
-                                    warn += alPeachK.warnMessage(languageNum);
+                                    warn += alPeachK.warnMessage();
                                 }if(alPeanutK.allergyCompare(alInform)){
-                                    warn += alPeanutK.warnMessage(languageNum);
+                                    warn += alPeanutK.warnMessage();
                                 }if(alWalnutK.allergyCompare(alInform)) {
-                                    warn += alWalnutK.warnMessage(languageNum);
+                                    warn += alWalnutK.warnMessage();
                                 }if(alPineNutK.allergyCompare(alInform)) {
-                                    warn += alPineNutK.warnMessage(languageNum);
+                                    warn += alPineNutK.warnMessage();
                                 }if(alTomatoK.allergyCompare(alInform)) {
-                                    warn += alTomatoK.warnMessage(languageNum);
+                                    warn += alTomatoK.warnMessage();
                                 }if(alSoybeanK.allergyCompare(alInform)) {
-                                    warn += alSoybeanK.warnMessage(languageNum);
+                                    warn += alSoybeanK.warnMessage();
                                 }if(alWheatK.allergyCompare(alInform)) {
-                                    warn += alWheatK.warnMessage(languageNum);
+                                    warn += alWheatK.warnMessage();
                                 }if(alBuckWheatK.allergyCompare(alInform)) {
-                                    warn += alBuckWheatK.warnMessage(languageNum);
+                                    warn += alBuckWheatK.warnMessage();
                                 }if(alSulfurousAcidK.allergyCompare(alInform)) {
-                                    warn += alSulfurousAcidK.warnMessage(languageNum);
+                                    warn += alSulfurousAcidK.warnMessage();
                                 }
                             }
                         }
+                        /*if(warn.length() == 0) {
+                            warn = "safe";
+                            fdResult += food + "\n"+ warn + "\n\n";
+                        } */
                         if (warn.length() > 0) {
-                            numFood++;
-                            AlertDialog.Builder warning = new AlertDialog.Builder(MainActivity.this);
-
-                            warning.setTitle(food + "(" + numFood + ")");
-                            warning.setMessage("'" + warn + "'" + " were detected" + " in it");
-
-                            warning.setPositiveButton("confirm", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-
-                            AlertDialog alertDialog = warning.show();
-                            TextView messageText = (TextView) alertDialog.findViewById(android.R.id.message);
-                            messageText.setTextSize(25);
-                            alertDialog.show();
+                            fdResult += food + "\n*allergy : " + warn + "\n\n";
                         }
                     }
+                    showDialogLayout(fdResult, pdNum);
                 }
             });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        egg_k = findViewById(R.id.checkBox_egg_k);
-        beef_k = findViewById(R.id.checkBox_beef_k);
-        pork_k = findViewById(R.id.checkBox_pork_k);
-        chicken_k = findViewById(R.id.checkBox_chicken_k);
-        shrimp_k = findViewById(R.id.checkBox_shrimp_k);
-        crab_k = findViewById(R.id.checkBox_crab_k);
-        squid_k = findViewById(R.id.checkBox_squid_k);
-        mackerel_k = findViewById(R.id.checkBox_mackerel_k);
-        shellfish_k = findViewById(R.id.checkBox_shellfish_k);
-        milk_k = findViewById(R.id.checkBox_milk_k);
-        peach_k = findViewById(R.id.checkBox_peach_k);
-        peanut_k = findViewById(R.id.checkBox_peanut_k);
-        walnut_k = findViewById(R.id.checkBox_walnut_k);
-        pine_nut_k = findViewById(R.id.checkBox_pine_nut_k);
-        tomato_k = findViewById(R.id.checkBox_tomato_k);
-        soybean_k = findViewById(R.id.checkBox_soybean_k);
-        wheat_k = findViewById(R.id.checkBox_wheat_k);
-        buck_wheat_k = findViewById(R.id.checkBox_buck_wheat_k);
-        sulfurous_acid_k = findViewById(R.id.checkBox_sulfurous_acid_k);
+        dialog_layout = new Dialog(MainActivity.this);       // Dialog 초기화
+        dialog_layout.setContentView(R.layout.dialog_layout);             // xml 레이아웃 파일과 연결
 
-        milk_u = findViewById(R.id.checkBox_milk_u);
-        egg_u = findViewById(R.id.checkBox_egg_u);
-        shrimp_u = findViewById(R.id.checkBox_shrimp_u);
-        fish_u = findViewById(R.id.checkBox_fish_u);
-        shellfish_u = findViewById(R.id.checkBox_shellfishAlU_u);
-        treeNuts_u = findViewById(R.id.checkBox_treeNuts_u);
-        wheat_u = findViewById(R.id.checkBox_wheat_u);
-        peanuts_u = findViewById(R.id.checkBox_peanuts_u);
-        soybeans_u = findViewById(R.id.checkBox_soybeans_u);
+        KOR = findViewById(R.id.linear_KOR);
+        USA = findViewById(R.id.linear_USA);
+
+        egg_k = findViewById(R.id.linear_egg_k);
+        beef_k = findViewById(R.id.linear_beef_k);
+        pork_k = findViewById(R.id.linear_pork_k);
+        chicken_k = findViewById(R.id.linear_chicken_k);
+        shrimp_k = findViewById(R.id.linear_shrimp_k);
+        crab_k = findViewById(R.id.linear_crab_k);
+        squid_k = findViewById(R.id.linear_squid_k);
+        mackerel_k = findViewById(R.id.linear_mackerel_k);
+        shellfish_k = findViewById(R.id.linear_shellfish_k);
+        milk_k = findViewById(R.id.linear_milk_k);
+        peach_k = findViewById(R.id.linear_peach_k);
+        peanut_k = findViewById(R.id.linear_peanut_k);
+        walnut_k = findViewById(R.id.linear_walnut_k);
+        pine_nut_k = findViewById(R.id.linear_pine_nut_k);
+        tomato_k = findViewById(R.id.linear_tomato_k);
+        soybean_k = findViewById(R.id.linear_soybean_k);
+        wheat_k = findViewById(R.id.linear_wheat_k);
+        buck_wheat_k = findViewById(R.id.linear_buck_wheat_k);
+        sulfurous_acid_k = findViewById(R.id.linear_sulfurous_acid_k);
+
+        milk_u = findViewById(R.id.linear_milk_u);
+        egg_u = findViewById(R.id.linear_egg_u);
+        fish_u = findViewById(R.id.linear_fish_u);
+        shellfish_u = findViewById(R.id.linear_shellfish_u);
+        treeNuts_u = findViewById(R.id.linear_treeNuts_u);
+        wheat_u = findViewById(R.id.linear_wheat_u);
+        peanuts_u = findViewById(R.id.linear_peanuts_u);
+        soybeans_u = findViewById(R.id.linear_soybeans_u);
+
+        /*text_egg_k = findViewById(R.id.text_egg_k);
+        text_beef_k = findViewById(R.id.text_beef_k);
+        text_pork_k = findViewById(R.id.text_pork_k);
+        text_chicken_k = findViewById(R.id.text_chicken_k);
+        text_shrimp_k = findViewById(R.id.text_shrimp_k);
+        text_crab_k = findViewById(R.id.text_crab_k);
+        text_squid_k = findViewById(R.id.text_squid_k);
+        text_mackerel_k = findViewById(R.id. text_mackerel_k);
+        text_shellfish_k = findViewById(R.id.text_shellfish_k);
+        text_milk_k = findViewById(R.id.text_milk_k);
+        text_peach_k = findViewById(R.id.text_peach_k);
+        text_peanut_k = findViewById(R.id.text_peanut_k);
+        text_walnut_k = findViewById(R.id.text_walnut_k);
+        text_pine_nut_k = findViewById(R.id.text_pine_nut_k);
+        text_tomato_k = findViewById(R.id.text_tomato_k);
+        text_soybean_k = findViewById(R.id.text_soybean_k);
+        text_wheat_k = findViewById(R.id.text_wheat_k);
+        text_buck_wheat_k = findViewById(R.id.text_buck_wheat_k);
+        text_sulfurous_acid_k = findViewById(R.id.text_sulfurous_acid_k);
+
+        text_milk_u = findViewById(R.id.text_milk_u);
+        text_egg_u = findViewById(R.id.text_egg_u);
+        text_fish_u = findViewById(R.id.text_fish_u);
+        text_shellfish_u = findViewById(R.id.text_shellfish_u);
+        text_treeNuts_u = findViewById(R.id.text_treeNuts_u);
+        text_wheat_u = findViewById(R.id.text_wheat_u);
+        text_peanuts_u = findViewById(R.id.text_peanuts_u);
+        text_soybeans_u = findViewById(R.id.text_soybeans_u);
+
+        image_egg_k = findViewById(R.id.image_egg_k);
+        image_beef_k = findViewById(R.id.image_beef_k);
+        image_pork_k = findViewById(R.id.image_pork_k);
+        image_chicken_k = findViewById(R.id.image_chicken_k);
+        image_shrimp_k = findViewById(R.id.image_shrimp_k);
+        image_crab_k = findViewById(R.id.image_crab_k);
+        image_squid_k = findViewById(R.id.image_squid_k);
+        image_mackerel_k = findViewById(R.id. image_mackerel_k);
+        image_shellfish_k = findViewById(R.id.image_shellfish_k);
+        image_milk_k = findViewById(R.id.image_milk_k);
+        image_peach_k = findViewById(R.id.image_peach_k);
+        image_peanut_k = findViewById(R.id.image_peanut_k);
+        image_walnut_k = findViewById(R.id.image_walnut_k);
+        image_pine_nut_k = findViewById(R.id.image_pine_nut_k);
+        image_tomato_k = findViewById(R.id.image_tomato_k);
+        image_soybean_k = findViewById(R.id.image_soybean_k);
+        image_wheat_k = findViewById(R.id.image_wheat_k);
+        image_buck_wheat_k = findViewById(R.id.image_buck_wheat_k);
+        image_sulfurous_acid_k = findViewById(R.id.image_sulfurous_acid_k);
+
+        image_milk_u = findViewById(R.id.image_milk_u);
+        image_egg_u = findViewById(R.id.image_egg_u);
+        image_fish_u = findViewById(R.id.image_fish_u);
+        image_shellfish_u = findViewById(R.id.image_shellfish_u);
+        image_treeNuts_u = findViewById(R.id.image_treeNuts_u);
+        image_wheat_u = findViewById(R.id.image_wheat_u);
+        image_peanuts_u = findViewById(R.id.image_peanuts_u);
+        image_soybeans_u = findViewById(R.id.image_soybeans_u);
 
         textView_consider = findViewById(R.id.textView_consider);
 
-        spinner_language = (Spinner)findViewById(R.id.spinner_language);
+        spinner_language = (Spinner)findViewById(R.id.spinner_language); */
         spinner_nationality = (Spinner)findViewById(R.id.spinner_nationality);
-
-
 
         egg_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (egg_k.isChecked()) {
-                    alEggsK.buttonTurn(true);
-                } else {
-                    alEggsK.buttonTurn(false);
-                }
+                alEggsK.buttonTurn(!alEggsK.alTake);
+                //System.out.println(alEggsK.alTake);
+                egg_k.setBackgroundColor(Color.parseColor(alEggsK.backgroundColorSet()));
             }
         });
         beef_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (beef_k.isChecked()) {
-                    alBeefK.buttonTurn(true);
-                } else {
-                    alBeefK.buttonTurn(false);
-                }
+                alBeefK.buttonTurn(!alBeefK.alTake);
+                beef_k.setBackgroundColor(Color.parseColor(alBeefK.backgroundColorSet()));
             }
         });
         pork_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (pork_k.isChecked()) {
-                    alPorkK.buttonTurn(true);
-                } else {
-                    alPorkK.buttonTurn(false);
-                }
+                alPorkK.buttonTurn(!alPorkK.alTake);
+                pork_k.setBackgroundColor(Color.parseColor(alPorkK.backgroundColorSet()));
             }
         });
         chicken_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (chicken_k.isChecked()) {
-                    alChickenK.buttonTurn(true);
-                } else {
-                    alChickenK.buttonTurn(false);
-                }
+                alChickenK.buttonTurn(!alChickenK.alTake);
+                chicken_k.setBackgroundColor(Color.parseColor(alChickenK.backgroundColorSet()));
             }
         });
         shrimp_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (shrimp_k.isChecked()) {
-                    alShrimpK.buttonTurn(true);
-                } else {
-                    alShrimpK.buttonTurn(false);
-                }
+                alShrimpK.buttonTurn(!alShrimpK.alTake);
+                shrimp_k.setBackgroundColor(Color.parseColor(alShrimpK.backgroundColorSet()));
             }
         });
         crab_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (crab_k.isChecked()) {
-                    alCrabK.buttonTurn(true);
-                } else {
-                    alCrabK.buttonTurn(false);
-                }
+                alCrabK.buttonTurn(!alCrabK.alTake);
+                crab_k.setBackgroundColor(Color.parseColor(alCrabK.backgroundColorSet()));
             }
         });
         squid_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (squid_k.isChecked()) {
-                    alSquidK.buttonTurn(true);
-                } else {
-                    alSquidK.buttonTurn(false);
-                }
+                alSquidK.buttonTurn(!alSquidK.alTake);
+                squid_k.setBackgroundColor(Color.parseColor(alSquidK.backgroundColorSet()));
             }
         });
         mackerel_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mackerel_k.isChecked()) {
-                    alMackerelK.buttonTurn(true);
-                } else {
-                    alMackerelK.buttonTurn(false);
-                }
+                alMackerelK.buttonTurn(!alMackerelK.alTake);
+                mackerel_k.setBackgroundColor(Color.parseColor(alMackerelK.backgroundColorSet()));
             }
         });
         shellfish_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (shellfish_k.isChecked()) {
-                    alShellfishK.buttonTurn(true);
-                } else {
-                    alShellfishK.buttonTurn(false);
-                }
+                alShellfishK.buttonTurn(!alShellfishK.alTake);
+                shellfish_k.setBackgroundColor(Color.parseColor(alShellfishK.backgroundColorSet()));
             }
         });
         milk_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (milk_k.isChecked()) {
-                    alMilkK.buttonTurn(true);
-                } else {
-                    alMilkK.buttonTurn(false);
-                }
+                alMilkK.buttonTurn(!alMilkK.alTake);
+                milk_k.setBackgroundColor(Color.parseColor(alMilkK.backgroundColorSet()));
             }
         });
         peach_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (peach_k.isChecked()) {
-                    alPeachK.buttonTurn(true);
-                } else {
-                    alPeachK.buttonTurn(false);
-                }
+                alPeachK.buttonTurn(!alPeachK.alTake);
+                peach_k.setBackgroundColor(Color.parseColor(alPeachK.backgroundColorSet()));
             }
         });
         peanut_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (peanut_k.isChecked()) {
-                    alPeanutK.buttonTurn(true);
-                } else {
-                    alPeanutK.buttonTurn(false);
-                }
+                alPeanutK.buttonTurn(!alPeanutK.alTake);
+                peanut_k.setBackgroundColor(Color.parseColor(alPeanutK.backgroundColorSet()));
             }
         });
         walnut_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (walnut_k.isChecked()) {
-                    alWalnutK.buttonTurn(true);
-                } else {
-                    alWalnutK.buttonTurn(false);
-                }
+                alWalnutK.buttonTurn(!alWalnutK.alTake);
+                walnut_k.setBackgroundColor(Color.parseColor(alWalnutK.backgroundColorSet()));
             }
         });
         pine_nut_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (pine_nut_k.isChecked()) {
-                    alPineNutK.buttonTurn(true);
-                } else {
-                    alPineNutK.buttonTurn(false);
-                }
+                alPineNutK.buttonTurn(!alPineNutK.alTake);
+                pine_nut_k.setBackgroundColor(Color.parseColor(alPineNutK.backgroundColorSet()));
             }
         });
         tomato_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (tomato_k.isChecked()) {
-                    alTomatoK.buttonTurn(true);
-                } else {
-                    alTomatoK.buttonTurn(false);
-                }
+                alTomatoK.buttonTurn(!alTomatoK.alTake);
+                tomato_k.setBackgroundColor(Color.parseColor(alTomatoK.backgroundColorSet()));
             }
         });
         soybean_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (soybean_k.isChecked()) {
-                    alSoybeanK.buttonTurn(true);
-                } else {
-                    alSoybeanK.buttonTurn(false);
-                }
+                alSoybeanK.buttonTurn(!alSoybeanK.alTake);
+                soybean_k.setBackgroundColor(Color.parseColor(alSoybeanK.backgroundColorSet()));
             }
         });
         wheat_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (wheat_k.isChecked()) {
-                    alWheatK.buttonTurn(true);
-                } else {
-                    alWheatK.buttonTurn(false);
-                }
+                alWheatK.buttonTurn(!alWheatK.alTake);
+                wheat_k.setBackgroundColor(Color.parseColor(alWheatK.backgroundColorSet()));
             }
         });
         buck_wheat_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (buck_wheat_k.isChecked()) {
-                    alBuckWheatK.buttonTurn(true);
-                } else {
-                    alBuckWheatK.buttonTurn(false);
-                }
+                alBuckWheatK.buttonTurn(!alBuckWheatK.alTake);
+                buck_wheat_k.setBackgroundColor(Color.parseColor(alBuckWheatK.backgroundColorSet()));
             }
         });
         sulfurous_acid_k.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (sulfurous_acid_k.isChecked()) {
-                    alSulfurousAcidK.buttonTurn(true);
-                } else {
-                    alSulfurousAcidK.buttonTurn(false);
-                }
+                alSulfurousAcidK.buttonTurn(!alSulfurousAcidK.alTake);
+                sulfurous_acid_k.setBackgroundColor(Color.parseColor(alSulfurousAcidK.backgroundColorSet()));
             }
         });
 
 
-        milk_u.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (milk_u.isChecked()) {
-                    alMilkU.buttonTurn(true);
-                } else {
-                    alMilkU.buttonTurn(false);
-                }
-            }
-        });
         egg_u.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (egg_u.isChecked()) {
-                    alEggsU.buttonTurn(true);
-                    System.out.println(alEggsU.alTake);
-                } else {
-                    alEggsU.buttonTurn(false);
-                }
+                alEggsU.buttonTurn(!alEggsU.alTake);
+                egg_u.setBackgroundColor(Color.parseColor(alEggsU.backgroundColorSet()));
             }
         });
-        shrimp_u.setOnClickListener(new View.OnClickListener() {
+        milk_u.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (shrimp_u.isChecked()) {
-                    alShrimpU.buttonTurn(true);
-                } else {
-                    alShrimpU.buttonTurn(false);
-                }
+                alMilkU.buttonTurn(!alMilkU.alTake);
+                milk_u.setBackgroundColor(Color.parseColor(alMilkU.backgroundColorSet()));
             }
         });
         fish_u.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (fish_u.isChecked()) {
-                    alFishU.buttonTurn(true);
-                } else {
-                    alFishU.buttonTurn(false);
-                }
+                alFishU.buttonTurn(!alFishU.alTake);
+                fish_u.setBackgroundColor(Color.parseColor(alFishU.backgroundColorSet()));
             }
         });
         shellfish_u.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (shellfish_u.isChecked()) {
-                    alShellfishU.buttonTurn(true);
-                } else {
-                    alShellfishU.buttonTurn(false);
-                }
+                alShellfishU.buttonTurn(!alShellfishU.alTake);
+                shellfish_u.setBackgroundColor(Color.parseColor(alShellfishU.backgroundColorSet()));
             }
         });
         treeNuts_u.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (treeNuts_u.isChecked()) {
-                    alNutsU.buttonTurn(true);
-                } else {
-                    alNutsU.buttonTurn(false);
-                }
+                alNutsU.buttonTurn(!alNutsU.alTake);
+                treeNuts_u.setBackgroundColor(Color.parseColor(alNutsU.backgroundColorSet()));
             }
         });
         wheat_u.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (wheat_u.isChecked()) {
-                    alWheatU.buttonTurn(true);
-                } else {
-                    alWheatU.buttonTurn(false);
-                }
+                alWheatU.buttonTurn(!alWheatU.alTake);
+                wheat_u.setBackgroundColor(Color.parseColor(alWheatU.backgroundColorSet()));
             }
         });
         peanuts_u.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (peanuts_u.isChecked()) {
-                    alPeanutsU.buttonTurn(true);
-                } else {
-                    alPeanutsU.buttonTurn(false);
-                }
+                alPeanutsU.buttonTurn(!alPeanutsU.alTake);
+                peanuts_u.setBackgroundColor(Color.parseColor(alPeanutsU.backgroundColorSet()));
             }
         });
         soybeans_u.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (soybeans_u.isChecked()) {
-                    alSoybeansU.buttonTurn(true);
-                } else {
-                    alSoybeansU.buttonTurn(false);
-                }
+                alSoybeansU.buttonTurn(!alSoybeansU.alTake);
+                soybeans_u.setBackgroundColor(Color.parseColor(alSoybeansU.backgroundColorSet()));
             }
         });
 
-        spinner_language.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        /*spinner_language.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-               if(spinner_language.getItemAtPosition(position).toString().equals("English")) {
+                if(spinner_language.getItemAtPosition(position).toString().equals("English")) {
                    languageNum = 1;
 
-                   milk_u.setText(alMilkU.alNameU);
-                   egg_u.setText(alEggsU.alNameU);
-                   fish_u.setText(alFishU.alNameU);
-                   shrimp_u.setText(alShellfishU.alNameU);
-                   shellfish_u.setText(alShellfishU.alNameU);
-                   treeNuts_u.setText(alNutsU.alNameU);
-                   wheat_u.setText(alWheatU.alNameU);
-                   peanuts_u.setText(alPeanutsU.alNameU);
-                   soybeans_u.setText(alSoybeansU.alNameU);
+                   text_milk_u.setText(alMilkU.alNameU);
+                   text_egg_u.setText(alEggsU.alNameU);
+                   text_fish_u.setText(alFishU.alNameU);
+                   text_shellfish_u.setText(alShellfishU.alNameU);
+                   text_treeNuts_u.setText(alNutsU.alNameU);
+                   text_wheat_u.setText(alWheatU.alNameU);
+                   text_peanuts_u.setText(alPeanutsU.alNameU);
+                   text_soybeans_u.setText(alSoybeansU.alNameU);
 
-                   egg_k.setText(alEggsK.alNameU);
-                   beef_k.setText(alBeefK.alNameU);
-                   pork_k.setText(alPorkK.alNameU);
-                   chicken_k.setText(alChickenK.alNameU);
-                   shrimp_k.setText(alShrimpK.alNameU);
-                   crab_k.setText(alCrabK.alNameU);
-                   squid_k.setText(alSquidK.alNameU);
-                   mackerel_k.setText(alMackerelK.alNameU);
-                   shellfish_k.setText(alShellfishK.alNameU);
-                   milk_k.setText(alMilkK.alNameU);
-                   peach_k.setText(alPeachK.alNameU);
-                   peanut_k.setText(alPeanutK.alNameU);
-                   walnut_k.setText(alWalnutK.alNameU);
-                   pine_nut_k.setText(alPineNutK.alNameU);
-                   tomato_k.setText(alTomatoK.alNameU);
-                   soybean_k.setText(alSoybeanK.alNameU);
-                   wheat_k.setText(alWheatK.alNameU);
-                   buck_wheat_k.setText(alBuckWheatK.alNameU);
-                   sulfurous_acid_k.setText(alSulfurousAcidK.alNameU);
+                   text_egg_k.setText(alEggsK.alNameU);
+                   text_beef_k.setText(alBeefK.alNameU);
+                   text_pork_k.setText(alPorkK.alNameU);
+                   text_chicken_k.setText(alChickenK.alNameU);
+                   text_shrimp_k.setText(alShrimpK.alNameU);
+                   text_crab_k.setText(alCrabK.alNameU);
+                   text_squid_k.setText(alSquidK.alNameU);
+                   text_mackerel_k.setText(alMackerelK.alNameU);
+                   text_shellfish_k.setText(alShellfishK.alNameU);
+                   text_milk_k.setText(alMilkK.alNameU);
+                   text_peach_k.setText(alPeachK.alNameU);
+                   text_peanut_k.setText(alPeanutK.alNameU);
+                   text_walnut_k.setText(alWalnutK.alNameU);
+                   text_pine_nut_k.setText(alPineNutK.alNameU);
+                   text_tomato_k.setText(alTomatoK.alNameU);
+                   text_soybean_k.setText(alSoybeanK.alNameU);
+                   text_wheat_k.setText(alWheatK.alNameU);
+                   text_buck_wheat_k.setText(alBuckWheatK.alNameU);
+                   text_sulfurous_acid_k.setText(alSulfurousAcidK.alNameU);
 
-                   textView_consider.setText("Please check your allergy information");
+                   textView_consider.setText("Check your Allergy");
                    textView_consider.setTextSize(27);
                } else if(spinner_language.getItemAtPosition(position).toString().equals("한국어")) {
                    languageNum = 82;
 
-                   milk_u.setText(alMilkU.alNameK);
-                   egg_u.setText(alEggsU.alNameK);
-                   fish_u.setText(alFishU.alNameK);
-                   shrimp_u.setText(alShellfishU.alNameK);
-                   shellfish_u.setText(alShellfishU.alNameK);
-                   treeNuts_u.setText(alNutsU.alNameK);
-                   wheat_u.setText(alWheatU.alNameK);
-                   peanuts_u.setText(alPeanutsU.alNameK);
-                   soybeans_u.setText(alSoybeansU.alNameK);
+                   text_milk_u.setText(alMilkU.alNameK);
+                   text_egg_u.setText(alEggsU.alNameK);
+                   text_fish_u.setText(alFishU.alNameK);
+                   text_shellfish_u.setText(alShellfishU.alNameK);
+                   text_treeNuts_u.setText(alNutsU.alNameK);
+                   text_wheat_u.setText(alWheatU.alNameK);
+                   text_peanuts_u.setText(alPeanutsU.alNameK);
+                   text_soybeans_u.setText(alSoybeansU.alNameK);
 
-                   egg_k.setText(alEggsK.alNameK);
-                   beef_k.setText(alBeefK.alNameK);
-                   pork_k.setText(alPorkK.alNameK);
-                   chicken_k.setText(alChickenK.alNameK);
-                   shrimp_k.setText(alShrimpK.alNameK);
-                   crab_k.setText(alCrabK.alNameK);
-                   squid_k.setText(alSquidK.alNameK);
-                   mackerel_k.setText(alMackerelK.alNameK);
-                   shellfish_k.setText(alShellfishK.alNameK);
-                   milk_k.setText(alMilkK.alNameK);
-                   peach_k.setText(alPeachK.alNameK);
-                   peanut_k.setText(alPeanutK.alNameK);
-                   walnut_k.setText(alWalnutK.alNameK);
-                   pine_nut_k.setText(alPineNutK.alNameK);
-                   tomato_k.setText(alTomatoK.alNameK);
-                   soybean_k.setText(alSoybeanK.alNameK);
-                   wheat_k.setText(alWheatK.alNameK);
-                   buck_wheat_k.setText(alBuckWheatK.alNameK);
-                   sulfurous_acid_k.setText(alSulfurousAcidK.alNameK);
+                   text_egg_k.setText(alEggsK.alNameK);
+                   text_beef_k.setText(alBeefK.alNameK);
+                   text_pork_k.setText(alPorkK.alNameK);
+                   text_chicken_k.setText(alChickenK.alNameK);
+                   text_shrimp_k.setText(alShrimpK.alNameK);
+                   text_crab_k.setText(alCrabK.alNameK);
+                   text_squid_k.setText(alSquidK.alNameK);
+                   text_mackerel_k.setText(alMackerelK.alNameK);
+                   text_shellfish_k.setText(alShellfishK.alNameK);
+                   text_milk_k.setText(alMilkK.alNameK);
+                   text_peach_k.setText(alPeachK.alNameK);
+                   text_peanut_k.setText(alPeanutK.alNameK);
+                   text_walnut_k.setText(alWalnutK.alNameK);
+                   text_pine_nut_k.setText(alPineNutK.alNameK);
+                   text_tomato_k.setText(alTomatoK.alNameK);
+                   text_soybean_k.setText(alSoybeanK.alNameK);
+                   text_wheat_k.setText(alWheatK.alNameK);
+                   text_buck_wheat_k.setText(alBuckWheatK.alNameK);
+                   text_sulfurous_acid_k.setText(alSulfurousAcidK.alNameK);
 
-                   textView_consider.setText("당신의 알러지 정보를 입력해주세요");
+                   textView_consider.setText("알러지를 체크해주세요");
                    textView_consider.setTextSize(24);
                }
             }
@@ -576,74 +560,22 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
-        });
+        }); */
+
+
         spinner_nationality.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(spinner_nationality.getItemAtPosition(position).toString().equals("USA")) {
                     nationalNum = 1;
 
-                    milk_u.setVisibility(View.VISIBLE);
-                    egg_u.setVisibility(View.VISIBLE);
-                    fish_u.setVisibility(View.VISIBLE);
-                    shrimp_u.setVisibility(View.VISIBLE);
-                    shellfish_u.setVisibility(View.VISIBLE);
-                    treeNuts_u.setVisibility(View.VISIBLE);
-                    wheat_u.setVisibility(View.VISIBLE);
-                    peanuts_u.setVisibility(View.VISIBLE);
-                    soybeans_u.setVisibility(View.VISIBLE);
-
-                    egg_k.setVisibility(View.GONE);
-                    beef_k.setVisibility(View.GONE);
-                    pork_k.setVisibility(View.GONE);
-                    chicken_k.setVisibility(View.GONE);
-                    shrimp_k.setVisibility(View.GONE);
-                    crab_k.setVisibility(View.GONE);
-                    squid_k.setVisibility(View.GONE);
-                    mackerel_k.setVisibility(View.GONE);
-                    shellfish_k.setVisibility(View.GONE);
-                    milk_k.setVisibility(View.GONE);
-                    peach_k.setVisibility(View.GONE);
-                    peanut_k.setVisibility(View.GONE);
-                    walnut_k.setVisibility(View.GONE);
-                    pine_nut_k.setVisibility(View.GONE);
-                    tomato_k.setVisibility(View.GONE);
-                    soybean_k.setVisibility(View.GONE);
-                    wheat_k.setVisibility(View.GONE);
-                    buck_wheat_k.setVisibility(View.GONE);
-                    sulfurous_acid_k.setVisibility(View.GONE);
+                    KOR.setVisibility(View.GONE);
+                    USA.setVisibility(View.VISIBLE);
                 } else if(spinner_nationality.getItemAtPosition(position).toString().equals("Korea")) {
                     nationalNum = 82;
 
-                    milk_u.setVisibility(View.GONE);
-                    egg_u.setVisibility(View.GONE);
-                    fish_u.setVisibility(View.GONE);
-                    shrimp_u.setVisibility(View.GONE);
-                    shellfish_u.setVisibility(View.GONE);
-                    treeNuts_u.setVisibility(View.GONE);
-                    wheat_u.setVisibility(View.GONE);
-                    peanuts_u.setVisibility(View.GONE);
-                    soybeans_u.setVisibility(View.GONE);
-
-                    egg_k.setVisibility(View.VISIBLE);
-                    beef_k.setVisibility(View.VISIBLE);
-                    pork_k.setVisibility(View.VISIBLE);
-                    chicken_k.setVisibility(View.VISIBLE);
-                    shrimp_k.setVisibility(View.VISIBLE);
-                    crab_k.setVisibility(View.VISIBLE);
-                    squid_k.setVisibility(View.VISIBLE);
-                    mackerel_k.setVisibility(View.VISIBLE);
-                    shellfish_k.setVisibility(View.VISIBLE);
-                    milk_k.setVisibility(View.VISIBLE);
-                    peach_k.setVisibility(View.VISIBLE);
-                    peanut_k.setVisibility(View.VISIBLE);
-                    walnut_k.setVisibility(View.VISIBLE);
-                    pine_nut_k.setVisibility(View.VISIBLE);
-                    tomato_k.setVisibility(View.VISIBLE);
-                    soybean_k.setVisibility(View.VISIBLE);
-                    wheat_k.setVisibility(View.VISIBLE);
-                    buck_wheat_k.setVisibility(View.VISIBLE);
-                    sulfurous_acid_k.setVisibility(View.VISIBLE);
+                    KOR.setVisibility(View.VISIBLE);
+                    USA.setVisibility(View.GONE);
                 }
             }
             @Override
@@ -670,4 +602,84 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
     public void onButtonClick(View view) {
         barcodeLauncher.launch(new ScanOptions());
     }
+    public void showDialogLayout(String foodResult, int pdNum){
+        int pdNm = pdNum;
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog_layout.getWindow().getAttributes());
+        lp.width = 1000;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        dialog_layout.show();
+
+        Window window = dialog_layout.getWindow();
+        window.setAttributes(lp);
+
+        Button OKBtn = dialog_layout.findViewById(R.id.btnOK);
+        OKBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog_layout.dismiss();
+            }
+        });
+        TextView WarnMessage = dialog_layout.findViewById(R.id.textMessage);
+        TextView PrNumMessage = dialog_layout.findViewById(R.id.textTitleBottom);
+        WarnMessage.setText(foodResult);
+        PrNumMessage.setText("( " + pdNum+" )");
+    }
+    /*public class ListViewAdapter extends BaseAdapter {
+        ArrayList<Food> items = new ArrayList<Food>();
+
+        @Override
+        public int getCount() {
+            return items.size();
+        }
+
+        public void addItem(Food item) {
+            items.add(item);
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return items.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup viewGroup) {
+            final Context context = viewGroup.getContext();
+            final Food product = items.get(position);
+
+            if(convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.dialog_layout, viewGroup, false);
+
+            } else {
+                View view = new View(context);
+                view = (View) convertView;
+            }
+
+            TextView tv_num = (TextView) convertView.findViewById(R.id.tv_num);
+            TextView tv_name = (TextView) convertView.findViewById(R.id.tv_name);
+            ImageView iv_icon = (ImageView) convertView.findViewById(R.id.iv_icon);
+
+            tv_num.setText(bearItem.getNum());
+            tv_name.setText(bearItem.getName());
+            iv_icon.setImageResource(bearItem.getResId());
+            Log.d(TAG, "getView() - [ "+position+" ] "+bearItem.getName());
+
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(context, bearItem.getNum()+" 번 - "+bearItem.getName()+" 입니당! ", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
+    } */
 }
+
